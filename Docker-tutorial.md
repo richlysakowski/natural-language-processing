@@ -39,27 +39,30 @@ Then you need to logout and login to the system again (disconnect and connect to
 
 ## Run container for the first time
 
-Now you can start new container from this image with:
+Now you can start new container from this image with the following command:
 ```sh
-docker run -it -p 8080:8080 --name coursera-aml-nlp akashin/coursera-aml-nlp
+docker run -it -p 8080:8080 --name coursera-aml-nlp akashin/coursera-aml-nlp -v path_on_your_machine:path_within_docker
 ```
-This will start the Ubuntu instance and give you an access to its command line. You can type `run_notebook` to launch IPython notebook server. 
+This will start the Ubuntu instance and give you an access to its command line. You can type `run_notebook` to launch IPython notebook server.
 
-You may find it useful to mount a directory from your local machine within the container using `-v` option.
+Note that we are using `-p 8080:8080` argument to set up port forwarding to make IPython notebook accessible at address http://localhost:8080. If you're using AWS, make sure that you've [set up the port forwarding](https://github.com/hse-aml/natural-language-processing/blob/master/AWS-tutorial.md#2-set-up-dependencies-and-run-your-project) there as well.
 
-For Linux and OSX, the following command should work:
+**Important:** Docker image only contains system dependencies for the project (e.g. TensorFlow, Starspace).
+All other project-related files (e.g. input data) need to be exposed to the container manually though [Docker volumes](https://docs.docker.com/storage/volumes/). To do this, we are mounting a directory from your machine within the container using `-v` option.
+
+On Linux and OSX, an example command looks like:
 ```sh
 docker run -it -p 8080:8080 --name coursera-aml-nlp -v $PWD:/root/coursera akashin/coursera-aml-nlp
 ```
 This will use shell alias `$PWD` to mount current directory to the folder `/root/coursera` in the container. Alternatively, you can mount arbitrary directory by replacing `$PWD` with a custom path.
 
-For Windows, there are some extra [steps](https://rominirani.com/docker-on-windows-mounting-host-directories-d96f3f056a2c) involved, and the launch command looks like
+**On Windows**, there are some extra [steps](https://rominirani.com/docker-on-windows-mounting-host-directories-d96f3f056a2c) involved, and the launch command looks like
 ```sh
 docker run -it -p 8080:8080 --name coursera-aml-nlp --user root -v /c/Users/$YOUR_USERNAME:/root/coursera akashin/coursera-aml-nlp
 ```
 Where `/c/Users/$YOUR_USERNAME` is the path to your user's home folder.
 
-If you're using Docker Toolbox on Windows, the command given above might not work because of the additional VirtualBox layer involved. Instead, we recommend you to follow the guidance in http://blog.shahinrostami.com/2017/11/docker-toolbox-windows-7-shared-volumes/.
+If you're using Docker Toolbox on Windows, the command given above might not work because of the additional VirtualBox layer involved. Instead, we recommend that you follow the guidance in http://blog.shahinrostami.com/2017/11/docker-toolbox-windows-7-shared-volumes/.
 
 ## Stop and resume container
 
@@ -146,6 +149,7 @@ e5b7bcd85a1b        akashin/coursera-aml-nlp   "/bin/bash"         Less than a s
 ```
 If the part about `PORTS` differs, remove the current container following [instructions](#other-operations-on-the-container) and start it again.
 - Make sure that browser proxy settings don't interfere with accessing local web sites.
+- If you're running Docker on AWS, make sure you've set up port forwarding as described [here](https://github.com/hse-aml/natural-language-processing/blob/master/AWS-tutorial.md#2-set-up-dependencies-and-run-your-project).
 
 ### How do I load data into Docker container?
 To access the data in the container, we recommend to use `-v` flag described [here](#run-container-for-the-first-time) to mount a local directory from your computer into the container filesystem. For more details read [Docker documentation](https://docs.docker.com/storage/volumes/).
